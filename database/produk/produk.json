@@ -4,8 +4,8 @@
           "nama": "VIU 2 BULAN ANTILIMIT",
           "desk": "PRIVATE ANTILIMIT",
           "harga": 0,
-          "stok": 47,
-          "stokTerjual": 0,
+          "stok": 27,
+          "stokTerjual": 20,
           "totalStok": 47
      },
      {
@@ -28,15 +28,6 @@
           "totalStok": 0
      },
      {
-          "id": "canvalifetime",
-          "nama": "CANVA LIFETIME",
-          "desk": "GARANSI 6 BULAN",
-          "harga": 5000,
-          "stok": 0,
-          "stokTerjual": 0,
-          "totalStok": 0
-     },
-     {
           "id": "vidiotv",
           "nama": "VIDIO TV ONLY",
           "desk": "FULL GARANSI",
@@ -46,30 +37,22 @@
           "totalStok": 0
      },
      {
-          "id": "vidioplat",
-          "nama": "VIDIO PLATINUM 1 BULAN ALL DEVICE",
-          "desk": "FULL GARANSI",
-          "harga": 20000,
-          "stok": 0,
-          "stokTerjual": 0,
-          "totalStok": 0
-     },
-     {
           "id": "am1th",
           "nama": "ALIGHT MOTION 1 TAHUN",
           "desk": "GARANSI 6 BULAN",
-          "harga": 8000,
-          "stok": 0,
+          "harga": 2500,
+          "stok": 5,
           "stokTerjual": 0,
-          "totalStok": 0
+          "totalStok": 5,
+          "note": "- Akses Login: yopmail.com\n- Cara login: https://t.me/tutoriallogin"
      },
      {
-          "id": "capcrack",
-          "nama": "CAPCUT CRACK",
-          "desk": "LANGSUNG CHECK LOGIN",
-          "harga": 12000,
-          "stok": 1,
+          "id": "admincanva",
+          "nama": "ADMIN CANVA LIFETIME",
+          "desk": "BISA INVITE 100 MEMBER, GARANSI 3 BULAN",
+          "harga": 10000,
+          "stok": 4,
           "stokTerjual": 0,
-          "totalStok": 1
+          "totalStok": 4
      }
 ]

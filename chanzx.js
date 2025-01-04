@@ -644,9 +644,10 @@
   │ ${cbu} ${prefix}delsc (*Menghapus Produk*)
   │ ${cbu} ${prefix}setdesk (*Mengubah Deskripsi Produk*)
   │ ${cbu} ${prefix}setharga (*Mengubah Harga Produk*)
-  │ ${cbu} ${prefix}kick (*Mengubah Harga Produk*)
-  │ ${cbu} ${prefix}group open (*Mengubah Harga Produk*)
-  │ ${cbu} ${prefix}group close (*Mengubah Harga Produk*)
+  │ ${cbu} ${prefix}kick (*Kick memer*)
+  │ ${cbu} ${prefix}group open (*buka group*)
+  │ ${cbu} ${prefix}group close (*tutup group*)
+  │ ${cbu} ${prefix}setnote (*note produk*)
   └──···
 
 
@@ -690,32 +691,41 @@
       }
           break
           
-      case 'qris': case 'deposit':{
-        try {
-          validateRegistration(sender);
-      } catch (err) {
-          return;
-      }
-          const ref = require('crypto').randomBytes(7).toString("hex").toUpperCase();
-          let qe = text
-          if(!text) return reply(`Contoh: ${prefix}qris 5000`)
-          if(isNaN(qe)) return reply('Harus Angka tidak Boleh String!')
-          if(Number(qe) <= 2000) return reply('Minimal deposit 2000!')
-          let cap = `━━━ ━ *DETAIL PEMBAYARAN* ━ ━━━
+          case 'qris': case 'deposit': {
+            try {
+                validateRegistration(sender);
+            } catch (err) {
+                return;
+            }
+            const ref = require('crypto').randomBytes(7).toString("hex").toUpperCase();
+            let qe = text;
+            if (!text) return reply(`Contoh: ${prefix}qris 5000`);
+            if (isNaN(qe)) return reply('Harus Angka tidak Boleh String!');
+            if (Number(qe) < 2000) return reply('Minimal deposit 2000!');
+        
+            let cap = `━━━ ━ *DETAIL PEMBAYARAN* ━ ━━━\n\n  ◆ ID Transaksi: ${ref}\n  ◆ Harga Dibayarkan: ${toRupiah(qe)}\n  ◆ Transaksi Pada: ${hariini} : ${wib}\n  ◆ Payment VIA: QRIS ALL PAY\n\n  ${xxc}\n\n  🍀 *INFORMASI*\n  Silahkan Konfirmasi Kepada Owner ${ownernomer} Jika Telah\n  melakukan transfer Pembayaran Sertakan Bukti ScreenShot!!`;
+        
+            let pesanQris = chanzx.sendMessage(m.chat, { image: { url: qrispayment }, caption: cap }, { quoted: m });
+            
+            // Pastikan global.db.data.transaksi terdefinisi
+            if (!global.db.data.transaksi) {
+                global.db.data.transaksi = {};
+            }
+        
+            // Timer untuk auto cancel dalam 3 menit dan hapus pesan QRIS
+            setTimeout(() => {
+                delete global.db.data.transaksi[sender];
+                chanzx.sendMessage(m.chat, { delete: pesanQris.key });
+                reply('Transaksi dibatalkan karena tidak ada pembayaran dalam 3 menit.');
+            }, 180000);
+        
+            // Perintah cancel
+            global.db.data.transaksi[sender] = { ref, amount: qe, waktu: Date.now() };
+            reply(`Ketik *#cancel ${ref}* jika ingin membatalkan transaksi.`);
+        }
+        break;
+        
 
-  ◆ ID Transaksi: ${ref}
-  ◆ Harga Dibayarkan: ${toRupiah(qe)}
-  ◆ Transaksi Pada: ${hariini} : ${wib}
-  ◆ Payment VIA: QRIS ALL PAY
-
-  ${xxc}
-
-  🍀 *INFORMASI*
-  Silahkan Konfirmasi Kepada Owner ${ownernomer} Jika Telah
-  melakukan transfer Pembayaran Sertakan Bukti ScreenShot!!`
-          chanzx.sendMessage(m.chat, {image: { url: qrispayment },caption: cap},{ quoted:m })
-      }
-          break
 
           case 'saldo':{
             try {
@@ -1271,7 +1281,7 @@ break;
         if (err.code !== 'ENOENT') {
             console.error(err);
         }
-        return false; // Jika file tidak ada, anggap pengguna belum terdaftar
+        return false; 
     }
     return users.some(user => user.userId === userId);
   }

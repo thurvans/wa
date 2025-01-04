@@ -151,6 +151,14 @@
     "6289601940010@s.whatsapp.net": {
       "afkTime": -1,
       "afkReason": ""
+    },
+    "6289691070452@s.whatsapp.net": {
+      "afkTime": -1,
+      "afkReason": ""
+    },
+    "6285159969966@s.whatsapp.net": {
+      "afkTime": -1,
+      "afkReason": ""
     }
   },
   "group": {},
@@ -259,6 +267,16 @@
       "mute": false,
       "antilink": false,
       "antilinkv2": false
+    },
+    "6289691070452@s.whatsapp.net": {
+      "mute": false,
+      "antilink": false,
+      "antilinkv2": false
+    },
+    "6285159969966@s.whatsapp.net": {
+      "mute": false,
+      "antilink": false,
+      "antilinkv2": false
     }
   },
   "database": {},
@@ -276,5 +294,12 @@
   "others": {},
   "sticker": {},
   "game": {},
-  "anonymous": {}
+  "anonymous": {},
+  "transaksi": {
+    "6282125841007@s.whatsapp.net": {
+      "ref": "642DE08A67E742",
+      "amount": "2000",
+      "waktu": 1735978222654
+    }
+  }
 }
