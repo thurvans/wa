@@ -7,5 +7,33 @@
           "stok": 47,
           "stokTerjual": 0,
           "totalStok": 47
+     },
+     {
+          "id": "netflix1u",
+          "nama": "NETFLIX 1U",
+          "desk": "FULL GARANSI",
+          "harga": 25000,
+          "stok": 0,
+          "stokTerjual": 4,
+          "totalStok": 4,
+          "note": "⾕  syarat dan ketentuannya:\n\n➜ Hanya di perbolehkan login 1 device saja\n➜ dilarang memakai dan \n mengubah pin / rename / profile\n orang lain\n➜ dilarang ganti email atau password\n➜ dilarang otak atik akun / billing (denda 500k)\n➜ dilarang ubah plan !\n➜ dilarang login logout\n➜ dilarang menggunakan vpn \n➜ durasi 25-30 hari terhitung 1 bulan\n➜ klik ‘ not right now ’ atau ‘ tidak\n sekarang ’ jika ada notif update\n pembayaran, sehingga akun dapat\n dipakai menonton kembali\n\n⾕  ps :\n⛔ Tidak menerima komplain screen limit\n⛔ Device login terdeteksi , jika melanggar rules akun akan di tarik dan garansi hangus \n⛔ proses garansi 3x24 jam\n⛔ thank you for ordering :\n happy watching !"
+     },
+     {
+          "id": "yt1b",
+          "nama": "YOUTUBE 1 BULAN INDIVIDUAL",
+          "desk": "FULL GARANSI",
+          "harga": 4000,
+          "stok": 0,
+          "stokTerjual": 0,
+          "totalStok": 0
+     },
+     {
+          "id": "canvalifetime",
+          "nama": "CANVA LIFETIME",
+          "desk": "GARANSI 6 BULAN",
+          "harga": 5000,
+          "stok": 0,
+          "stokTerjual": 0,
+          "totalStok": 0
      }
 ]
