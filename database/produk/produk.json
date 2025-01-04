@@ -35,5 +35,41 @@
           "stok": 0,
           "stokTerjual": 0,
           "totalStok": 0
+     },
+     {
+          "id": "vidiotv",
+          "nama": "VIDIO TV ONLY",
+          "desk": "FULL GARANSI",
+          "harga": 10000,
+          "stok": 0,
+          "stokTerjual": 0,
+          "totalStok": 0
+     },
+     {
+          "id": "vidioplat",
+          "nama": "VIDIO PLATINUM 1 BULAN ALL DEVICE",
+          "desk": "FULL GARANSI",
+          "harga": 20000,
+          "stok": 0,
+          "stokTerjual": 0,
+          "totalStok": 0
+     },
+     {
+          "id": "am1th",
+          "nama": "ALIGHT MOTION 1 TAHUN",
+          "desk": "GARANSI 6 BULAN",
+          "harga": 8000,
+          "stok": 0,
+          "stokTerjual": 0,
+          "totalStok": 0
+     },
+     {
+          "id": "capcrack",
+          "nama": "CAPCUT CRACK",
+          "desk": "LANGSUNG CHECK LOGIN",
+          "harga": 12000,
+          "stok": 1,
+          "stokTerjual": 0,
+          "totalStok": 1
      }
 ]

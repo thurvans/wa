@@ -2,6 +2,7 @@ const fs = require('fs')
 const chalk = require('chalk')
 global.baileys = require('@whiskeysockets/baileys') 
 global.namabot = 'BOT AUTO ORDER FACA STORE'
+global.botnomer = "6285798482315"
 global.namaowner = 'Faca'
 global.usePairingCode = true // false untuk QR
 global.owner = ['6282125841007']

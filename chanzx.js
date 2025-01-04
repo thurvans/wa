@@ -689,6 +689,7 @@
           chanzx.sendMessage(nomor+'@s.whatsapp.net', {text: `Pemotongan Saldo Anda Sebesar Rp${toRupiah(bal)}`})
       }
           break
+          
       case 'qris': case 'deposit':{
         try {
           validateRegistration(sender);
@@ -715,6 +716,7 @@
           chanzx.sendMessage(m.chat, {image: { url: qrispayment },caption: cap},{ quoted:m })
       }
           break
+
           case 'saldo':{
             try {
               validateRegistration(sender);
@@ -1311,45 +1313,30 @@ break;
   break;
 
 
-  //     case 'addsc': case 'sellsc':{
-  //   if (!text) return reply('Format Salah. Gunakan format: .addsc IDPRODUK|NAMAPRODUK|DESK|HARGA');
-  //   if (!isOwner) return reply('Khusus Owner');
-  //   const data = text.split('|');
-  //   if (data.length < 4) {
-  //       return reply('Format Salah. Gunakan format: .addsc IDPRODUK|NAMAPRODUK|DESK|HARGA');
-  //   }
-  //   const id = data[0];
-  //   const nama = data[1];
-  //   const desk = data[2];
-  //   const harga = parseFloat(data[3]);
+  case 'promo': {
+    let produkList = [];
+    try {
+        const data = fs.readFileSync('database/produk/produk.json', 'utf8');
+        produkList = JSON.parse(data);
+    } catch (err) {
+        console.error(err);
+        return reply('Terjadi kesalahan saat membaca produk.');
+    }
 
-  //   let produkList = [];
-  //   try {
-  //       const existingData = fs.readFileSync('database/produk/produk.json', 'utf8');
-  //       produkList = JSON.parse(existingData);
-  //   } catch (err) {
-  //       console.error(err);
-  //   }
+    let response = `🎉 *FACA STORE!* 🎉\n\nProduk Tersedia:`;
+    
+    produkList.forEach((produk) => {
+        response += `\n- ${produk.nama.toUpperCase()} : Rp ${produk.harga}`;
+    });
+    
+    response += `\n\n📞 Owner: ${ownernomer}`;
+    response += `\n🤖 Bot Order: ${botnomer}`;
+    // response += `\n🔗 Link Grup: https://chat.whatsapp.com/examplelink`;
+    
+    reply(response);
+}
+break;
 
-  //   const existingProduk = produkList.find(p => p.id === id);
-  //   if (existingProduk) {
-  //       return reply('ID Produk sudah ada.');
-  //   }
-
-  //   const produk = {
-  //       id,
-  //       nama,
-  //       desk,
-  //       harga
-  //   };
-
-  //   produkList.push(produk);
-  //   fs.writeFileSync('database/produk/produk.json', JSON.stringify(produkList, null, 5));
-  //   let media2 = await chanzx.downloadAndSaveMediaMessage(quoted)
-  //   fs.writeFileSync(`./database/script/${id}`+'.zip', media2)
-  //   reply('Script berhasil ditambahkan!');
-  // }
-  // break;
 
   case 'addproduk': case 'sellproduk': {
     if (!text) return reply('Format Salah. Gunakan format: .addproduk IDPRODUK|NAMAPRODUK|DESK|HARGA');
