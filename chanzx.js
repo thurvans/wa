@@ -734,39 +734,74 @@ break;
       }
       break;
           
-          case 'qris': case 'deposit': {
-            try {
-                validateRegistration(sender);
-            } catch (err) {
-                return;
-            }
-            const ref = require('crypto').randomBytes(7).toString("hex").toUpperCase();
-            let qe = text;
-            if (!text) return reply(`Contoh: ${prefix}qris 5000`);
-            if (isNaN(qe)) return reply('Harus Angka tidak Boleh String!');
-            if (Number(qe) < 2000) return reply('Minimal deposit 2000!');
-        
-            let cap = `━━━ ━ *DETAIL PEMBAYARAN* ━ ━━━\n\n  ◆ ID Transaksi: ${ref}\n  ◆ Harga Dibayarkan: ${toRupiah(qe)}\n  ◆ Transaksi Pada: ${hariini} : ${wib}\n  ◆ Payment VIA: QRIS ALL PAY\n\n  ${xxc}\n\n  🍀 *INFORMASI*\n  Silahkan Konfirmasi Kepada Owner ${ownernomer} Jika Telah\n  melakukan transfer Pembayaran Sertakan Bukti ScreenShot!!`;
-        
-            let pesanQris = chanzx.sendMessage(m.chat, { image: { url: qrispayment }, caption: cap }, { quoted: m });
-            
-            // Pastikan global.db.data.transaksi terdefinisi
-            if (!global.db.data.transaksi) {
-                global.db.data.transaksi = {};
-            }
-        
-            // Timer untuk auto cancel dalam 3 menit dan hapus pesan QRIS
-            setTimeout(() => {
-                delete global.db.data.transaksi[sender];
-                chanzx.sendMessage(m.chat, { delete: pesanQris.key });
-                reply('Transaksi dibatalkan karena tidak ada pembayaran dalam 3 menit.');
-            }, 180000);
-        
-            // Perintah cancel
-            global.db.data.transaksi[sender] = { ref, amount: qe, waktu: Date.now() };
-            reply(`Ketik *#cancel ${ref}* jika ingin membatalkan transaksi.`);
+      case 'deposit': {
+        try {
+            validateRegistration(sender);
+        } catch (err) {
+            return;
         }
+    
+        // Menghasilkan ID Transaksi berupa angka
+        const generateNumericId = (length = 6) => {
+            const max = Math.pow(10, length);
+            const min = Math.pow(10, length - 1);
+            return Math.floor(Math.random() * (max - min) + min).toString();
+        };
+    
+        const ref = generateNumericId(6); // ID dengan panjang 6 digit angka
+        let qe = text;
+        if (!text) return reply(`Contoh: ${prefix}qris 5000`);
+        if (isNaN(qe)) return reply('Harus Angka tidak Boleh String!');
+        if (Number(qe) < 2000) return reply('Minimal deposit 2000!');
+    
+        let cap = `━━━ ━ *DETAIL PEMBAYARAN* ━ ━━━\n\n  ◆ ID Transaksi: ${ref}\n  ◆ Harga Dibayarkan: ${toRupiah(qe)}\n  ◆ Transaksi Pada: ${hariini} : ${wib}\n  ◆ Payment VIA: QRIS ALL PAY\n\n  ${xxc}\n\n  🍀 *INFORMASI*\n  Silahkan Konfirmasi Kepada Owner ${ownernomer} Jika Telah\n  melakukan transfer Pembayaran Sertakan Bukti ScreenShot!!\n\n  Ketik *#cancel ${ref}* jika ingin membatalkan transaksi.`;
+    
+        let pesanQris = await chanzx.sendMessage(m.chat, { image: { url: qrispayment }, caption: cap }, { quoted: m });
+    
+        // Pastikan global.db.data.transaksi terdefinisi
+        if (!global.db.data.transaksi) {
+            global.db.data.transaksi = {};
+        }
+    
+        // Timer untuk auto cancel dalam 3 menit dan hapus pesan QRIS
+        const autoCancel = setTimeout(() => {
+            delete global.db.data.transaksi[sender];
+            chanzx.sendMessage(m.chat, { delete: pesanQris.key });
+            reply('Transaksi dibatalkan karena tidak ada pembayaran dalam 3 menit.');
+        }, 180000);
+    
+        // Menyimpan detail transaksi ke database
+        global.db.data.transaksi[sender] = { ref, amount: qe, waktu: Date.now(), pesanKey: pesanQris.key, autoCancel };
+    
         break;
+    }
+    
+    
+    case 'cancel': {
+        const args = text.split(' ');
+        const cancelRef = args[0];
+    
+        if (!cancelRef) return reply('Harap sertakan ID Transaksi yang ingin dibatalkan. Contoh: *#cancel ABC1234*');
+    
+        const transaksi = global.db.data.transaksi[sender];
+    
+        if (!transaksi || transaksi.ref !== cancelRef) {
+            return reply('ID Transaksi tidak ditemukan atau Anda tidak memiliki transaksi aktif dengan ID tersebut.');
+        }
+    
+        // Hapus pesan detail pembayaran untuk semua orang
+        if (transaksi.pesanKey) {
+            await chanzx.sendMessage(m.chat, { delete: transaksi.pesanKey });
+        }
+    
+        // Bersihkan data transaksi dan batalkan timer auto cancel
+        clearTimeout(transaksi.autoCancel);
+        delete global.db.data.transaksi[sender];
+    
+        reply(`Transaksi dengan ID ${cancelRef} berhasil dibatalkan.`);
+    
+        break;
+    }
 
         case 'saldo': {
             try {
