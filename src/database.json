@@ -159,6 +159,14 @@
     "6285159969966@s.whatsapp.net": {
       "afkTime": -1,
       "afkReason": ""
+    },
+    "6281378320650@s.whatsapp.net": {
+      "afkTime": -1,
+      "afkReason": ""
+    },
+    "6281271175298@s.whatsapp.net": {
+      "afkTime": -1,
+      "afkReason": ""
     }
   },
   "group": {},
@@ -277,6 +285,16 @@
       "mute": false,
       "antilink": false,
       "antilinkv2": false
+    },
+    "6281378320650@s.whatsapp.net": {
+      "mute": false,
+      "antilink": false,
+      "antilinkv2": false
+    },
+    "6281271175298@s.whatsapp.net": {
+      "mute": false,
+      "antilink": false,
+      "antilinkv2": false
     }
   },
   "database": {},
@@ -300,6 +318,13 @@
       "ref": "642DE08A67E742",
       "amount": "2000",
       "waktu": 1735978222654
+    }
+  },
+  "jadibot": {
+    "6285161417500": {
+      "nomor": "6285161417500",
+      "endDate": 1738639268901,
+      "status": "active"
     }
   }
 }

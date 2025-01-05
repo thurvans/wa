@@ -724,29 +724,28 @@
             reply(`Ketik *#cancel ${ref}* jika ingin membatalkan transaksi.`);
         }
         break;
-        
 
-
-          case 'saldo':{
-            try {
+        case 'saldo': {
+          try {
               validateRegistration(sender);
           } catch (err) {
               return;
           }
-  const message = `━━ *DETAIL AKUN KAMU* ━━
+          const message = `━━ *DETAIL AKUN KAMU* ━━
+      
+        • NAMA: ${pushname}
+        • Nomor: ${sender.split('@')[0]}
+        • Saldo: Rp${toRupiah(cekSaldo(sender.split('@')[0], db_saldo))}
+      
+        Untuk nambah Saldo ketik #deposit
+      
+        🍀 *Note :*
+        _saldo hanya bisa untuk buy_
+        _tidak bisa ditarik atau transfer_!`; // Pesan yang ingin Anda kirim
+          reply(message);
+      }
+      break;
 
-  • NAMA: ${pushname}
-  • Nomor: ${sender.split('@')[0]}
-  • Saldo: Rp${toRupiah(cekSaldo(senderNumber, db_saldo))}
-
-  Untuk nambah Saldo ketik #deposit
-
-  🍀 *Note :*
-  _saldo hanya bisa untuk buy_
-  _tidak bisa ditarik atau transfer_!`; // Pesan yang ingin Anda kirim
-  reply(message)
-  }
-  break
       case 'editdesksc': case 'setdesk':{
     if (!text) return reply('Format Salah. Gunakan format: .editdeskc IDPRODUK|DESKRIPSI BARU');
     if (!isOwner) return reply(OnlyOwn);
@@ -892,108 +891,6 @@
     return ownerList.includes(sender.split('@')[0]);
   }
 
-  // case 'buy': {
-  //   try {
-  //     validateRegistration(sender);
-  // } catch (err) {
-  //     return;
-  // }
-  //   if (!text) return reply('Format Salah. Gunakan format: #buy IDPRODUK|JUMLAH');
-  //   const data = text.split('|');
-  //   if (data.length < 2) {
-  //       return reply('Format Salah. Gunakan format: #buy IDPRODUK|JUMLAH');
-  //   }
-  //   const id = data[0];
-  //   const jumlah = parseInt(data[1], 10);
-
-  //   let produkList = [];
-  //   try {
-  //       const existingData = fs.readFileSync('database/produk/produk.json', 'utf8');
-  //       produkList = JSON.parse(existingData);
-  //   } catch (err) {
-  //       console.error(err);
-  //       return reply('Terjadi kesalahan saat membaca data produk.');
-  //   }
-
-  //   const produk = produkList.find(p => p.id === id);
-  //   if (!produk) {
-  //       return reply('Produk tidak ditemukan.');
-  //   }
-
-  //   if (produk.stok < jumlah) {
-  //       return reply('Stok tidak mencukupi.');
-  //   }
-
-  //   const stokPath = `./database/script/${id}.json`;
-  //   let stokData = [];
-  //   try {
-  //       if (fs.existsSync(stokPath)) {
-  //           const existingStok = fs.readFileSync(stokPath, 'utf8');
-  //           stokData = JSON.parse(existingStok);
-  //       } else {
-  //           return reply('Stok akun tidak ditemukan.');
-  //       }
-  //   } catch (err) {
-  //       console.error(err);
-  //       return reply('Terjadi kesalahan saat membaca data stok akun.');
-  //   }
-
-  //   if (stokData.length < jumlah) {
-  //       return reply('Stok akun tidak mencukupi.');
-  //   }
-
-  //   // Ambil akun sesuai jumlah yang dibeli
-  //   const akunTerjual = stokData.splice(0, jumlah);
-
-  //   // Simpan data stok yang tersisa
-  //   fs.writeFileSync(stokPath, JSON.stringify(stokData, null, 5));
-
-  //   // Perbarui stok dan stok terjual
-  //   produk.stok -= jumlah;
-  //   produk.stokTerjual += jumlah;
-  //   fs.writeFileSync('database/produk/produk.json', JSON.stringify(produkList, null, 5));
-
-  //   // Tambahkan ID Order unik
-  //   const idOrder = `FCS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  //   const tanggalTransaksi = `${hariini} : ${wib}`;
-
-  //   // Buat informasi pembelian
-  //   let purchaseInfo = `┅━━━━━═┅═❏ *Transaksi Success* ❏═┅═━━━━━┅\n`;
-  //   purchaseInfo += `┌────────\n`;
-  //   purchaseInfo += `${xxi} ID Order: ${idOrder}\n`;
-  //   purchaseInfo += `${xxi} Nomer Buyer: ${sender.split('@')[0]}\n`;
-  //   purchaseInfo += `${xxi} Produk: ${produk.nama}\n`;
-  //   purchaseInfo += `${xxi} Jumlah: ${jumlah}\n`;
-  //   purchaseInfo += `${xxi} Harga Total: ${produk.harga * jumlah}\n`;
-  //   purchaseInfo += `${xxi} Tanggal Transaksi: ${tanggalTransaksi}\n`;
-  //   purchaseInfo += `└────────\n\n`;
-  //   purchaseInfo += `*[ Detail Akun ]*\n`;
-
-  //   akunTerjual.forEach((akun, index) => {
-  //       purchaseInfo += `${index + 1}. Email: ${akun.email}| Password: ${akun.password}\n`;
-  //   });
-
-  //   // Kirim ke private chat sender
-  //   const privateChatId = sender; // ID pengirim
-  //   if (typeof chanzx?.sendMessage === 'function') {
-  //       chanzx.sendMessage(privateChatId, { text: purchaseInfo }) // Kirim ke private chat
-  //         .then(() => {
-  //           // Informasikan di grup (opsional)
-  //           if (isGroup) {
-  //               reply(`Pesanan telah berhasil. Detail akun telah dikirim ke nomor Anda.`);
-  //           }
-  //       })
-  //       .catch((error) => {
-  //           console.error('Gagal mengirim pesan ke private chat:', error);
-  //           reply('Terjadi kesalahan saat mengirim detail akun.');
-  //       });
-  //   } else {
-  //       console.error('sendMessage function is not defined');
-  //       reply('Terjadi kesalahan teknis.');
-  //   }
-  // }
-  // break;
-
   case 'buy': {
     try {
         validateRegistration(sender);
@@ -1044,6 +941,19 @@
         return reply('Stok akun tidak mencukupi.');
     }
 
+    // Hitung total harga
+    const totalHarga = produk.harga * jumlah;
+
+    // Cek saldo pengguna
+    const userSaldo = cekSaldo(sender.split('@')[0], db_saldo);
+    if (userSaldo < totalHarga) {
+        return reply('Saldo Anda tidak mencukupi untuk melakukan pembelian ini.');
+    }
+
+    // Kurangi saldo pengguna
+    db_saldo[sender.split('@')[0]] -= totalHarga;
+    fs.writeFileSync('./database/saldo.json', JSON.stringify(db_saldo, null, 5));
+
     // Ambil akun sesuai jumlah yang dibeli
     const akunTerjual = stokData.splice(0, jumlah);
 
@@ -1066,7 +976,7 @@
     purchaseInfo += `${xxi} Nomer Buyer: ${sender.split('@')[0]}\n`;
     purchaseInfo += `${xxi} Produk: ${produk.nama}\n`;
     purchaseInfo += `${xxi} Jumlah: ${jumlah}\n`;
-    purchaseInfo += `${xxi} Harga Total: ${produk.harga * jumlah}\n`;
+    purchaseInfo += `${xxi} Harga Total: ${totalHarga}\n`;
     purchaseInfo += `${xxi} Tanggal Transaksi: ${tanggalTransaksi}\n`;
     purchaseInfo += `└────────\n\n`;
     purchaseInfo += `*[ Detail Akun ]*\n`;

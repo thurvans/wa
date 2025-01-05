@@ -22,10 +22,10 @@
           "id": "yt1b",
           "nama": "YOUTUBE 1 BULAN INDIVIDUAL",
           "desk": "FULL GARANSI",
-          "harga": 4000,
+          "harga": 1000,
           "stok": 0,
-          "stokTerjual": 0,
-          "totalStok": 0
+          "stokTerjual": 4,
+          "totalStok": 4
      },
      {
           "id": "vidiotv",
@@ -54,5 +54,25 @@
           "stok": 4,
           "stokTerjual": 0,
           "totalStok": 4
+     },
+     {
+          "id": "vid1b",
+          "nama": " VIDIO PLATINUM PRIVATE 1 BULAN ALL DEVICE",
+          "desk": "GARANSI BACKFREE(TIDAK TERMASUK LIMIT SCREEN DAN AKUN KE BANNED)",
+          "harga": 25000,
+          "stok": 0,
+          "stokTerjual": 1,
+          "totalStok": 1,
+          "note": "Syarat Dan Ketentuan : \n1.⁠ ⁠Private ONLY! Boleh 2 device asal tidak lebih. Rawan banned! Jangan maksain lebih dari 2 device!\n2.⁠ ⁠Wajib ubah ke email aktif jika terjadi salah pw bisa di reset!\n3.⁠ ⁠Dilarang otak atik bill \n4.⁠ ⁠Garansi apabila bf, tidak untuk kebanned"
+     },
+     {
+          "id": "diamond",
+          "nama": "VIDIO DIAMOND 1 BULAN PRIVATE",
+          "desk": "GARANSI BACKFREE(TIDAK TERMASUK LIMIT SCREEN DAN AKUN KE BANNED)",
+          "harga": 85000,
+          "stok": 0,
+          "stokTerjual": 1,
+          "totalStok": 1,
+          "note": "1.⁠ ⁠Private ONLY! Boleh 2 device asal tidak lebih. Rawan banned! Jangan maksain lebih dari 2 device!\n2.⁠ ⁠Wajib ubah ke email aktif jika terjadi salah pw bisa di reset!\n3.⁠ ⁠Dilarang otak atik bill \n4.⁠ ⁠Garansi apabila bf, tidak untuk kebanned"
      }
 ]
