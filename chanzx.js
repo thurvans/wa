@@ -13,6 +13,12 @@
       * Buy Panel? Tele @ichanxd
       * MINIMAL BISA NGODING TOLOL JANGAN JUAL DOANG
   */
+
+  /* 
+    * Recode By Faca
+    * Buy App premium dan suntik sosmed : 082125841007
+*/
+
   require('./config')
   require('./lib/ichanzx-listmenu')
   const {
@@ -98,7 +104,7 @@
   const isAdmins = isGroup ? groupAdmins.includes(sender) : false
   const senderNumber = sender.split('@')[0]
   const pushname = m.pushName || "No Name"
-  const nomorOwner = [`6288989013781`]
+  const nomorOwner = [`6282125841007`]
   const isBot = botNumber.includes(senderNumber)
   const isOwner = nomorOwner.includes(senderNumber) || isBot
   const mentionUser = [...new Set([...(msg.mentionedJid || []), ...(msg.quoted ? [msg.quoted.sender] : [])])]
@@ -641,10 +647,10 @@
   │ ${cbu} ${prefix}minsaldo (*Mengurangi Saldo Pengguna*)
   │ ${cbu} ${prefix}addproduk (*Menambahkan Produk Baru*)
   │ ${cbu} ${prefix}addstok (*Menambahkan Stok Produk*)
-  │ ${cbu} ${prefix}delsc (*Menghapus Produk*)
+  │ ${cbu} ${prefix}delproduk (*Menghapus Produk*)
   │ ${cbu} ${prefix}setdesk (*Mengubah Deskripsi Produk*)
   │ ${cbu} ${prefix}setharga (*Mengubah Harga Produk*)
-  │ ${cbu} ${prefix}kick (*Kick memer*)
+  │ ${cbu} ${prefix}kick (*Kick member*)
   │ ${cbu} ${prefix}group open (*buka group*)
   │ ${cbu} ${prefix}group close (*tutup group*)
   │ ${cbu} ${prefix}setnote (*note produk*)
@@ -661,7 +667,7 @@
   title: `${ucapanWaktu} ${pushname}`,
   body: "HuTod",
   thumbnail: thumb,
-  sourceUrl: "https://chat.whatsapp.com/Cf5wYQbDK8cDnolIkPruwk",
+  sourceUrl: "https://chat.whatsapp.com/BzkO3XIfPr3HaJYuX6LD23",
   mediaType: 1,
   renderLargerThumbnail: true
         }
@@ -679,16 +685,22 @@
     fs.writeFileSync('./database/saldo.json', JSON.stringify(db_saldo, null, 5));
 }
 
-      case 'addsaldo': {
-        let [nomor, bal] = text.split('|');
-        if (!isOwner) return reply(OnlyOwn);
-        if (!nomor || !bal) return reply(`Contoh: ${prefix}addsaldo 628xxxx|5000`);
-        if (isNaN(bal)) return reply('Harus Angka tidak Boleh String!');
-        addSaldo(nomor, Number(bal), db_saldo);
-        reply('Success Menambah Saldo pada: ' + `wa.me/${nomor}`);
-        chanzx.sendMessage(nomor + '@s.whatsapp.net', { text: `Anda Mendapatkan Saldo Bertambah Sebesar Rp${toRupiah(bal)}` });
-    }
-    break;
+case 'addsaldo': {
+  let [nomor, bal] = text.split('|');
+  if (!isOwner) return reply(OnlyOwn);
+  if (!nomor || !bal) return reply(`Contoh: ${prefix}addsaldo 628xxxx|5000`);
+  if (isNaN(bal)) return reply('Harus Angka tidak Boleh String!');
+
+  // Validasi user terdaftar
+  if (!db_saldo[nomor]) {
+      return reply(`Nomor ${nomor} belum terdaftar.`);
+  }
+
+  addSaldo(nomor, Number(bal), db_saldo);
+  reply('Success Menambah Saldo pada: ' + `wa.me/${nomor}`);
+  chanzx.sendMessage(nomor + '@s.whatsapp.net', { text: `Anda Mendapatkan Saldo Bertambah Sebesar Rp${toRupiah(bal)}` });
+}
+break;
     
 
           function minSaldo(user, amount, db_saldo) {
@@ -765,7 +777,7 @@
       }
       break;
 
-      case 'editdesksc': case 'setdesk':{
+case 'setdesk':{
     if (!text) return reply('Format Salah. Gunakan format: .editdeskc IDPRODUK|DESKRIPSI BARU');
     if (!isOwner) return reply(OnlyOwn);
     const data = text.split('|');
@@ -793,7 +805,7 @@
     }
   }
   break;
-      case 'edithargasc': case 'setharga':{
+  case 'setharga': {
     if (!text) return reply('Format Salah. Gunakan format: .edithargasc IDPRODUK|HARGABARU');
     if (!isOwner) return reply(OnlyOwn);
     const data = text.split('|');
@@ -801,7 +813,7 @@
         return reply('Format Salah. Gunakan format: .edithargasc IDPRODUK|HARGABARU');
     }
     const id = data[0];
-    const harga = parseFloat(data[1]);
+    const hargaBaru = parseFloat(data[1]);
 
     let produkList = [];
     try {
@@ -809,21 +821,45 @@
         produkList = JSON.parse(existingData);
     } catch (err) {
         console.error(err);
+        return reply('Terjadi kesalahan saat membaca data produk.');
     }
 
     const existingProdukIndex = produkList.findIndex(p => p.id === id);
     if (existingProdukIndex !== -1) {
-        produkList[existingProdukIndex].harga = harga;
+        const produk = produkList[existingProdukIndex];
+        const hargaLama = produk.harga;
+
+        produk.harga = hargaBaru;
         fs.writeFileSync('database/produk/produk.json', JSON.stringify(produkList, null, 5));
-        reply('Produk berhasil diedit!');
+
+        // Format detail perubahan harga
+        const detailPerubahan = `
+Price Telah diubah!
+
+Kode: ${produk.id}
+Nama produk: ${produk.nama}
+Harga Lama: Rp${toRupiah(hargaLama)}
+Harga Terbaru: Rp${toRupiah(hargaBaru)}
+Desk: ${produk.desk || 'Tidak ada deskripsi'}
+        `;
+        reply(detailPerubahan);
+
+        // Kirim pemberitahuan perubahan harga
+        if (typeof chanzx?.sendMessage === 'function') {
+            chanzx.sendMessage(sender, { text: detailPerubahan });
+        } else {
+            console.error('sendMessage function is not defined');
+        }
     } else {
         reply('Produk tidak ditemukan.');
     }
-  }
-  break;
-          case 'delsc': {
-    if (!text) return reply('Format Salah. Gunakan format: .delsc IDPRODUK');
-    if(!isOwner) return reply(OnlyOwn);
+}
+break;
+
+
+  case 'delproduk': {
+    if (!text) return reply('Format Salah. Gunakan format: #delsc IDPRODUK');
+    if (!isOwner) return reply(OnlyOwn);
     const idProdukToDelete = text.trim();
     let produkList = [];
     try {
@@ -835,15 +871,25 @@
     }
     const indexToDelete = produkList.findIndex(produk => produk.id === idProdukToDelete);
     if (indexToDelete !== -1) {
+        const deletedProduk = produkList[indexToDelete];
         produkList.splice(indexToDelete, 1);
         fs.writeFileSync('database/produk/produk.json', JSON.stringify(produkList, null, 4));
-        fs.unlinkSync(`database/script/${idProdukToDelete}.zip`);
-        reply('Produk berhasil dihapus!');
+        fs.unlinkSync(`database/script/${idProdukToDelete}.json`);
+        reply(`Produk '${deletedProduk.nama}' berhasil dihapus!`);
+
+        // Kirim pemberitahuan jika produk dihapus
+        const notifMessage = `Produk dengan nama '${deletedProduk.nama}' dan ID '${idProdukToDelete}' telah dihapus dari sistem.`;
+        if (typeof chanzx?.sendMessage === 'function') {
+            chanzx.sendMessage(sender, { text: notifMessage });
+        } else {
+            console.error('sendMessage function is not defined');
+        }
     } else {
         reply('Produk dengan ID yang diberikan tidak ditemukan.');
     }
-  }
-  break
+}
+break;
+
 
   case 'addowner': {
     if (!isOwner) return reply('Perintah ini hanya bisa dijalankan oleh Owner.');
@@ -1139,51 +1185,57 @@ break;
 break;
 
 
-  case 'addproduk': case 'sellproduk': {
-    if (!text) return reply('Format Salah. Gunakan format: .addproduk IDPRODUK|NAMAPRODUK|DESK|HARGA');
-    if (!isOwner) return reply('Khusus Owner');
-    const data = text.split('|');
-    if (data.length < 4) {
+case 'addproduk': {
+  if (!text) return reply('Format Salah. Gunakan format: .addproduk IDPRODUK|NAMAPRODUK|DESK|HARGA');
+  if (!isOwner) return reply('Khusus Owner');
+  const data = text.split('|');
+  if (data.length < 4) {
       return reply('Format Salah. Gunakan format: .addproduk IDPRODUK|NAMAPRODUK|DESK|HARGA');
-    }
-    const id = data[0];
-    const nama = data[1];
-    const desk = data[2];
-    const harga = parseFloat(data[3]);
+  }
 
-    let produkList = [];
-    try {
+  const id = data[0].trim();
+  const nama = data[1].trim();
+  const desk = data[2].trim();
+  const harga = parseFloat(data[3]);
+
+  let produkList = [];
+  try {
       const existingData = fs.readFileSync('database/produk/produk.json', 'utf8');
       produkList = JSON.parse(existingData);
-    } catch (err) {
+  } catch (err) {
       console.error(err);
-    }
-
-    const existingProduk = produkList.find(p => p.id === id);
-    if (existingProduk) {
-      return reply('ID Produk sudah ada.');
-    }
-
-    const produk = { id, nama, desk, harga, stok: 0, stokTerjual: 0, totalStok: 0 };
-    produkList.push(produk);
-    fs.writeFileSync('database/produk/produk.json', JSON.stringify(produkList, null, 5));
-
-    // Buat file stok jika belum ada
-    const stokPath = `./database/script/${id}.json`;
-    if (!fs.existsSync(stokPath)) {
-      fs.writeFileSync(stokPath, JSON.stringify([], null, 5));
-    }
-
-    const produkInfo = `
-  Harga: ${harga}
-  Stok Tersedia: ${produk.stok}
-  Stok Terjual: 0
-  Total Stok: 0
-  Kode: ${id}
-  Desk: ${desk}`;
-    console.log(produkInfo);
   }
-  break;
+
+  const existingProduk = produkList.find(p => p.id === id);
+  if (existingProduk) {
+      return reply('ID Produk sudah ada.');
+  }
+
+  const produk = { id, nama, desk, harga, stok: 0, stokTerjual: 0, totalStok: 0 };
+  produkList.push(produk);
+  fs.writeFileSync('database/produk/produk.json', JSON.stringify(produkList, null, 5));
+
+  // Buat file stok jika belum ada
+  const stokPath = `./database/script/${id}.json`;
+  if (!fs.existsSync(stokPath)) {
+      fs.writeFileSync(stokPath, JSON.stringify([], null, 5));
+  }
+
+  // Balasan detail produk setelah ditambahkan
+  const produkInfo = `*[ Produk Baru Berhasil Ditambahkan ]*
+
+Nama Produk: ${nama}
+Kode Produk: ${id}
+Harga: Rp${toRupiah(harga)}
+Stok Tersedia: ${produk.stok}
+Stok Terjual: ${produk.stokTerjual}
+Total Stok: ${produk.totalStok}
+Deskripsi: ${desk}`;
+
+  reply(produkInfo);
+}
+break;
+
 
 
 
@@ -1397,26 +1449,23 @@ break;
     }
     break;
 
-    case 'hidetag': {
-      if (!isGroup) return reply(mess.group); // Pastikan perintah dijalankan di grup
-      if (!isAdmins && !isOwner) return reply(mess.admin); // Pastikan pengguna adalah admin atau owner
-
-      // Validasi peserta grup
+    case 'hidetag': case 'h':{
+      if (!isGroup) return reply(mess.group); 
+      if (!isAdmins && !isOwner) return reply(mess.admin); 
       if (!participants || participants.length === 0) {
           return reply('Tidak dapat menemukan peserta grup.');
       }
 
-      // Validasi teks
-      const message = q && q.trim() !== '' ? q : 'Pesan kosong'; // Default ke "Pesan kosong" jika tidak ada teks
+      const message = q && q.trim() !== '' ? q : 'Pesan kosong';
 
       try {
           chanzx.sendMessage(
               from,
               {
                   text: message,
-                  mentions: participants.map(a => a.id), // Mention semua anggota grup
+                  mentions: participants.map(a => a.id),
               },
-              // Pastikan msg.quoted valid sebelum menambahkannya ke opsi
+
               msg.quoted && typeof msg.quoted === 'object' ? { quoted: msg } : {}
           );
           console.log(`Pesan hidetag terkirim: ${message}`);
