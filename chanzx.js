@@ -654,6 +654,8 @@
   │ ${cbu} ${prefix}group open (*buka group*)
   │ ${cbu} ${prefix}group close (*tutup group*)
   │ ${cbu} ${prefix}setnote (*note produk*)
+  │ ${cbu} ${prefix}promosi (*promosiin produk*)
+  │ ${cbu} ${prefix}promosi2 (*untuk di private chat*)
   └──···
 
 
@@ -1199,7 +1201,7 @@ break;
   break;
 
 
-  case 'promo': {
+  case 'promosi2': {
     let produkList = [];
     try {
         const data = fs.readFileSync('database/produk/produk.json', 'utf8');
@@ -1209,17 +1211,59 @@ break;
         return reply('Terjadi kesalahan saat membaca produk.');
     }
 
-    let response = `🎉 *FACA STORE!* 🎉\n\nProduk Tersedia:`;
+    let response = `🎉 *FACA STORE | BOT AUTO ORDER* 🎉\n\n`;
     
     produkList.forEach((produk) => {
-        response += `\n- ${produk.nama.toUpperCase()} : Rp ${produk.harga}`;
+        response += `\n📦 ${produk.nama.toUpperCase()} : Rp ${produk.harga} *(Stok: ${produk.stok})*\n`;
     });
     
     response += `\n\n📞 Owner: ${ownernomer}`;
-    response += `\n🤖 Bot Order: ${botnomer}`;
+    response += `\n🤖 Bot Order: ${botnomer}\n`;
+    response += `---------------------------------------\n\n`;
+    response += `Cara order :
+    Ketik #buy kode|jumlah untuk membeli produk.`;
     // response += `\n🔗 Link Grup: https://chat.whatsapp.com/examplelink`;
     
     reply(response);
+}
+break;
+
+
+case 'promosi': {
+    if (!isGroup) return reply(mess.group); // Pastikan perintah hanya di grup
+    if (!isAdmins && !isOwner) return reply(mess.admin); // Hanya untuk admin atau owner
+
+    let produkList = [];
+    try {
+        const data = fs.readFileSync('database/produk/produk.json', 'utf8');
+        produkList = JSON.parse(data);
+    } catch (err) {
+        console.error(err);
+        return reply('Terjadi kesalahan saat membaca produk.');
+    }
+
+    let response = `🎉 *FACA STORE | BOT AUTO ORDER* 🎉\n\n`;
+    produkList.forEach((produk) => {
+        response += `📦 ${produk.nama.toUpperCase()} : Rp ${produk.harga} *(Stok: ${produk.stok})*\n`;
+    });
+    response += `\n📞 Owner: ${ownernomer}`;
+    response += `\n🤖 Bot Order: ${botnomer}`;
+    response += `\n\nCara order: Ketik #buy kode|jumlah untuk membeli produk.`;
+
+    try {
+        // Kirim pesan hidetag dengan promosi
+        chanzx.sendMessage(
+            from,
+            {
+                text: response,
+                mentions: participants.map(a => a.id), // Sebutkan semua anggota grup
+            }
+        );
+        console.log('Pesan promosi terkirim dengan hidetag.');
+    } catch (err) {
+        console.error('Gagal mengirim pesan promosi:', err);
+        reply('Terjadi kesalahan saat mengirim pesan promosi.');
+    }
 }
 break;
 
