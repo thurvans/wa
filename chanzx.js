@@ -60,7 +60,7 @@
   const owner = JSON.parse(fs.readFileSync("./owner.json"))
   const ichanimage = pickRandom(cover);
 
-  const db_saldo = JSON.parse(fs.readFileSync("./database/saldo.json"));
+  const db_saldo = JSON.parse(fs.readFileSync('./database/saldo.json', 'utf-8'));
   const { addSaldo, minSaldo, cekSaldo } = require("./lib/deposit");
 
 
@@ -678,29 +678,41 @@
   break;
 
   function addSaldo(user, amount, db_saldo) {
-    if (!db_saldo[user]) {
-        db_saldo[user] = 0;
+    // Cari data berdasarkan id
+    const userIndex = db_saldo.findIndex(item => item.id === user);
+    if (userIndex === -1) {
+        throw new Error(`Nomor ${user} belum terdaftar.`);
     }
-    db_saldo[user] += amount;
-    fs.writeFileSync('./database/saldo.json', JSON.stringify(db_saldo, null, 5));
+
+    // Tambahkan saldo
+    db_saldo[userIndex].saldo += amount;
+
+    // Tulis kembali data ke saldo.json
+    fs.writeFileSync('./database/saldo.json', JSON.stringify(db_saldo, null, 2));
 }
 
 case 'addsaldo': {
-  let [nomor, bal] = text.split('|');
-  if (!isOwner) return reply(OnlyOwn);
-  if (!nomor || !bal) return reply(`Contoh: ${prefix}addsaldo 628xxxx|5000`);
-  if (isNaN(bal)) return reply('Harus Angka tidak Boleh String!');
+    let [nomor, bal] = text.split('|').map(x => x.trim()); // Hilangkan spasi tambahan
+    if (!isOwner) return reply(OnlyOwn);
+    if (!nomor || !bal) return reply(`Contoh: ${prefix}addsaldo 628xxxx|5000`);
+    if (isNaN(bal)) return reply('Harus Angka tidak Boleh String!');
 
-  // Validasi user terdaftar
-  if (!db_saldo[nomor]) {
-      return reply(`Nomor ${nomor} belum terdaftar.`);
-  }
+    // Baca data saldo dari file
+    const db_saldo = JSON.parse(fs.readFileSync('./database/saldo.json', 'utf-8'));
 
-  addSaldo(nomor, Number(bal), db_saldo);
-  reply('Success Menambah Saldo pada: ' + `wa.me/${nomor}`);
-  chanzx.sendMessage(nomor + '@s.whatsapp.net', { text: `Anda Mendapatkan Saldo Bertambah Sebesar Rp${toRupiah(bal)}` });
+    try {
+        // Tambahkan saldo
+        addSaldo(nomor, Number(bal), db_saldo);
+        reply('Success Menambah Saldo pada: ' + `wa.me/${nomor}`);
+        chanzx.sendMessage(nomor + '@s.whatsapp.net', {
+            text: `Anda Mendapatkan Saldo Bertambah Sebesar Rp${toRupiah(bal)}`
+        });
+    } catch (error) {
+        reply(error.message); // Kirim pesan error jika nomor tidak ditemukan
+    }
 }
 break;
+
     
 
           function minSaldo(user, amount, db_saldo) {
@@ -757,25 +769,41 @@ break;
         break;
 
         case 'saldo': {
-          try {
-              validateRegistration(sender);
-          } catch (err) {
-              return;
-          }
-          const message = `━━ *DETAIL AKUN KAMU* ━━
-      
-        • NAMA: ${pushname}
-        • Nomor: ${sender.split('@')[0]}
-        • Saldo: Rp${toRupiah(cekSaldo(sender.split('@')[0], db_saldo))}
-      
-        Untuk nambah Saldo ketik #deposit
-      
-        🍀 *Note :*
-        _saldo hanya bisa untuk buy_
-        _tidak bisa ditarik atau transfer_!`;
-          reply(message);
-      }
-      break;
+            try {
+                validateRegistration(sender); // Validasi registrasi
+            } catch (err) {
+                return reply('Anda belum terdaftar!');
+            }
+        
+            // Baca ulang data saldo dari file saldo.json
+            const db_saldo = JSON.parse(fs.readFileSync('./database/saldo.json', 'utf-8'));
+        
+            // Fungsi untuk mengecek saldo
+            function cekSaldo(user, db_saldo) {
+                const userData = db_saldo.find(item => item.id === user); // Cari user berdasarkan id
+                return userData ? userData.saldo : 0; // Kembalikan saldo jika user ditemukan, jika tidak 0
+            }
+        
+            // Ambil saldo user
+            const saldoUser = cekSaldo(sender.split('@')[0], db_saldo);
+        
+            // Pesan untuk user
+            const message = `━━ *DETAIL AKUN KAMU* ━━
+            
+            • NAMA: ${pushname}
+            • Nomor: ${sender.split('@')[0]}
+            • Saldo: Rp${toRupiah(saldoUser)}
+            
+            Untuk nambah Saldo ketik #deposit
+            
+            🍀 *Note :*
+            _saldo hanya bisa untuk buy_
+            _tidak bisa ditarik atau transfer_!`;
+        
+            reply(message);
+        }
+        break;
+        
 
 case 'setdesk':{
     if (!text) return reply('Format Salah. Gunakan format: .editdeskc IDPRODUK|DESKRIPSI BARU');
@@ -961,124 +989,100 @@ break;
 }
 
 case 'buy': {
-  try {
-      validateRegistration(sender);
-  } catch (err) {
-      return;
-  }
-  if (!text) return reply('Format Salah. Gunakan format: #buy IDPRODUK|JUMLAH');
-  const data = text.split('|');
-  if (data.length < 2) {
-      return reply('Format Salah. Gunakan format: #buy IDPRODUK|JUMLAH');
-  }
-  const id = data[0];
-  const jumlah = parseInt(data[1], 10);
+    try {
+        validateRegistration(sender);
+    } catch (err) {
+        return reply('Anda belum terdaftar!');
+    }
 
-  let produkList = [];
-  try {
-      const existingData = fs.readFileSync('database/produk/produk.json', 'utf8');
-      produkList = JSON.parse(existingData);
-  } catch (err) {
-      console.error(err);
-      return reply('Terjadi kesalahan saat membaca data produk.');
-  }
+    if (!text) return reply('Format Salah. Gunakan format: #buy IDPRODUK|JUMLAH');
+    const data = text.split('|');
+    if (data.length < 2) {
+        return reply('Format Salah. Gunakan format: #buy IDPRODUK|JUMLAH');
+    }
 
-  const produk = produkList.find(p => p.id === id);
-  if (!produk) {
-      return reply('Produk tidak ditemukan.');
-  }
+    const id = data[0];
+    const jumlah = parseInt(data[1], 10);
 
-  if (produk.stok < jumlah) {
-      return reply('Stok tidak mencukupi.');
-  }
+    // Load data produk
+    let produkList = [];
+    try {
+        const existingData = fs.readFileSync('database/produk/produk.json', 'utf8');
+        produkList = JSON.parse(existingData);
+    } catch (err) {
+        console.error(err);
+        return reply('Terjadi kesalahan saat membaca data produk.');
+    }
 
-  const stokPath = `./database/script/${id}.json`;
-  let stokData = [];
-  try {
-      if (fs.existsSync(stokPath)) {
-          const existingStok = fs.readFileSync(stokPath, 'utf8');
-          stokData = JSON.parse(existingStok);
-      } else {
-          return reply('Stok akun tidak ditemukan.');
-      }
-  } catch (err) {
-      console.error(err);
-      return reply('Terjadi kesalahan saat membaca data stok akun.');
-  }
+    const produk = produkList.find(p => p.id === id);
+    if (!produk) return reply('Produk tidak ditemukan.');
+    if (produk.stok < jumlah) return reply('Stok tidak mencukupi.');
 
-  if (stokData.length < jumlah) {
-      return reply('Stok akun tidak mencukupi.');
-  }
+    // Load data stok akun
+    const stokPath = `./database/script/${id}.json`;
+    let stokData = [];
+    try {
+        if (fs.existsSync(stokPath)) {
+            const existingStok = fs.readFileSync(stokPath, 'utf8');
+            stokData = JSON.parse(existingStok);
+        } else {
+            return reply('Stok akun tidak ditemukan.');
+        }
+    } catch (err) {
+        console.error(err);
+        return reply('Terjadi kesalahan saat membaca data stok akun.');
+    }
 
-  // Hitung total harga
-  const totalHarga = produk.harga * jumlah;
+    if (stokData.length < jumlah) return reply('Stok akun tidak mencukupi.');
 
-  // Cek saldo pengguna
-  const userSaldo = cekSaldo(sender.split('@')[0], db_saldo);
-  if (userSaldo < totalHarga) {
-      return reply('Saldo Anda tidak mencukupi untuk melakukan pembelian ini.');
-  }
+    // Hitung total harga
+    const totalHarga = produk.harga * jumlah;
 
-  // Kurangi saldo pengguna
-  db_saldo[sender.split('@')[0]] -= totalHarga;
-  fs.writeFileSync('./database/saldo.json', JSON.stringify(db_saldo, null, 5));
+    // Cek saldo pengguna
+    const userIndex = db_saldo.findIndex(item => item.id === sender.split('@')[0]);
+    if (userIndex === -1) return reply('Data saldo Anda tidak ditemukan.');
 
-  // Ambil akun sesuai jumlah yang dibeli
-  const akunTerjual = stokData.splice(0, jumlah);
+    if (db_saldo[userIndex].saldo < totalHarga) {
+        return reply('Saldo Anda tidak mencukupi untuk melakukan pembelian ini.');
+    }
 
-  // Simpan data stok yang tersisa
-  fs.writeFileSync(stokPath, JSON.stringify(stokData, null, 5));
+    // Kurangi saldo pengguna
+    db_saldo[userIndex].saldo -= totalHarga;
+    fs.writeFileSync('./database/saldo.json', JSON.stringify(db_saldo, null, 2));
 
-  // Perbarui stok dan stok terjual
-  produk.stok -= jumlah;
-  produk.stokTerjual += jumlah;
-  fs.writeFileSync('database/produk/produk.json', JSON.stringify(produkList, null, 5));
+    // Ambil akun sesuai jumlah yang dibeli
+    const akunTerjual = stokData.splice(0, jumlah);
+    fs.writeFileSync(stokPath, JSON.stringify(stokData, null, 2));
 
-  // Tambahkan ID Order unik
-  const idOrder = `FCS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  const tanggalTransaksi = `${hariini} : ${wib}`;
+    // Perbarui stok produk
+    produk.stok -= jumlah;
+    produk.stokTerjual = (produk.stokTerjual || 0) + jumlah;
+    fs.writeFileSync('database/produk/produk.json', JSON.stringify(produkList, null, 2));
 
-  // Buat informasi pembelian
-  let purchaseInfo = `┅━━━━━═┅═❏ *Transaksi Success* ❏═┅═━━━━━┅\n`;
-  purchaseInfo += `┌────────\n`;
-  purchaseInfo += `${xxi} ID Order: ${idOrder}\n`;
-  purchaseInfo += `${xxi} Nomer Buyer: ${sender.split('@')[0]}\n`;
-  purchaseInfo += `${xxi} Produk: ${produk.nama}\n`;
-  purchaseInfo += `${xxi} Jumlah: ${jumlah}\n`;
-  purchaseInfo += `${xxi} Harga Total: ${totalHarga}\n`;
-  purchaseInfo += `${xxi} Tanggal Transaksi: ${tanggalTransaksi}\n`;
-  purchaseInfo += `└────────\n\n`;
-  purchaseInfo += `*[ Detail Akun ]*\n`;
+    // Buat ID Order
+    const idOrder = `FCS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const tanggalTransaksi = `${hariini} : ${wib}`;
 
-  akunTerjual.forEach((akun, index) => {
-      purchaseInfo += `${index + 1}. Email: ${akun.email}| Password: ${akun.password}\n`;
-  });
+    // Informasi pembelian
+    let purchaseInfo = `┅━━━━━═┅═❏ *Transaksi Success* ❏═┅═━━━━━┅\n`;
+    purchaseInfo += `┌────────\n`;
+    purchaseInfo += `ID Order: ${idOrder}\n`;
+    purchaseInfo += `Nomer Buyer: ${sender.split('@')[0]}\n`;
+    purchaseInfo += `Produk: ${produk.nama}\n`;
+    purchaseInfo += `Jumlah: ${jumlah}\n`;
+    purchaseInfo += `Harga Total: Rp${totalHarga}\n`;
+    purchaseInfo += `Tanggal Transaksi: ${tanggalTransaksi}\n`;
+    purchaseInfo += `└────────\n\n`;
+    purchaseInfo += `*[ Detail Akun ]*\n`;
 
-  // Kirim ke private chat sender
-  const privateChatId = sender; // ID pengirim
-  if (typeof chanzx?.sendMessage === 'function') {
-      chanzx.sendMessage(privateChatId, { text: purchaseInfo }) // Kirim ke private chat
-        .then(() => {
-          // Kirim catatan sebagai pesan terpisah jika tersedia
-          if (produk.note) {
-              chanzx.sendMessage(privateChatId, { text: `*[ Catatan untuk Produk ]*\n${produk.note}` });
-          }
+    akunTerjual.forEach((akun, index) => {
+        purchaseInfo += `${index + 1}. Email: ${akun.email}| Password: ${akun.password}\n`;
+    });
 
-          // Informasikan di grup (opsional)
-          if (isGroup) {
-              reply(`Pesanan telah berhasil. Detail akun telah dikirim ke nomor Anda.`);
-          }
-      })
-      .catch((error) => {
-          console.error('Gagal mengirim pesan ke private chat:', error);
-          reply('Terjadi kesalahan saat mengirim detail akun.');
-      });
-  } else {
-      console.error('sendMessage function is not defined');
-      reply('Terjadi kesalahan teknis.');
-  }
+    reply(purchaseInfo);
 }
 break;
+
 
 
   case 'daftar': {

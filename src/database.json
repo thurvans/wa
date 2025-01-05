@@ -319,20 +319,16 @@
     "false": {
       "status": 0,
       "autoread": false
-    }
+    },
+    "apikey": "bbc0fe9815de7e1d6a600d433057d7b1",
+    "apiid": "310"
   },
   "donate": {},
   "others": {},
   "sticker": {},
   "game": {},
   "anonymous": {},
-  "transaksi": {
-    "6282125841007@s.whatsapp.net": {
-      "ref": "642DE08A67E742",
-      "amount": "2000",
-      "waktu": 1735978222654
-    }
-  },
+  "transaksi": {},
   "jadibot": {
     "6285161417500": {
       "nomor": "6285161417500",
