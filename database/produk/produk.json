@@ -1,77 +1,87 @@
 [
-     {
-          "id": "viu2b",
-          "nama": "VIU 2 BULAN ANTILIMIT",
-          "desk": "PRIVATE ANTILIMIT",
-          "harga": 0,
-          "stok": 27,
-          "stokTerjual": 20,
-          "totalStok": 47
-     },
-     {
-          "id": "netflix1u",
-          "nama": "NETFLIX 1U",
-          "desk": "FULL GARANSI",
-          "harga": 25000,
-          "stok": 0,
-          "stokTerjual": 4,
-          "totalStok": 4,
-          "note": "⾕  syarat dan ketentuannya:\n\n➜ Hanya di perbolehkan login 1 device saja\n➜ dilarang memakai dan \n mengubah pin / rename / profile\n orang lain\n➜ dilarang ganti email atau password\n➜ dilarang otak atik akun / billing (denda 500k)\n➜ dilarang ubah plan !\n➜ dilarang login logout\n➜ dilarang menggunakan vpn \n➜ durasi 25-30 hari terhitung 1 bulan\n➜ klik ‘ not right now ’ atau ‘ tidak\n sekarang ’ jika ada notif update\n pembayaran, sehingga akun dapat\n dipakai menonton kembali\n\n⾕  ps :\n⛔ Tidak menerima komplain screen limit\n⛔ Device login terdeteksi , jika melanggar rules akun akan di tarik dan garansi hangus \n⛔ proses garansi 3x24 jam\n⛔ thank you for ordering :\n happy watching !"
-     },
-     {
-          "id": "yt1b",
-          "nama": "YOUTUBE 1 BULAN INDIVIDUAL",
-          "desk": "FULL GARANSI",
-          "harga": 4000,
-          "stok": 0,
-          "stokTerjual": 7,
-          "totalStok": 7
-     },
-     {
-          "id": "vidiotv",
-          "nama": "VIDIO TV ONLY",
-          "desk": "FULL GARANSI",
-          "harga": 10000,
-          "stok": 0,
-          "stokTerjual": 0,
-          "totalStok": 0
-     },
-     {
-          "id": "am1th",
-          "nama": "ALIGHT MOTION 1 TAHUN",
-          "desk": "GARANSI 6 BULAN",
-          "harga": 2500,
-          "stok": 5,
-          "stokTerjual": 0,
-          "totalStok": 5,
-          "note": "- Akses Login: yopmail.com\n- Cara login: https://t.me/tutoriallogin"
-     },
-     {
-          "id": "admincanva",
-          "nama": "ADMIN CANVA LIFETIME",
-          "desk": "BISA INVITE 100 MEMBER, GARANSI 3 BULAN",
-          "harga": 10000,
-          "stok": 4,
-          "stokTerjual": 0,
-          "totalStok": 4
-     },
-     {
-          "id": "diamond",
-          "nama": "VIDIO DIAMOND 1 BULAN PRIVATE",
-          "desk": "GARANSI BACKFREE(TIDAK TERMASUK LIMIT SCREEN DAN AKUN KE BANNED)",
-          "harga": 85000,
-          "stok": 0,
-          "stokTerjual": 1,
-          "totalStok": 1,
-          "note": "1.⁠ ⁠Private ONLY! Boleh 2 device asal tidak lebih. Rawan banned! Jangan maksain lebih dari 2 device!\n2.⁠ ⁠Wajib ubah ke email aktif jika terjadi salah pw bisa di reset!\n3.⁠ ⁠Dilarang otak atik bill \n4.⁠ ⁠Garansi apabila bf, tidak untuk kebanned"
-     },
-     {
-          "id": "vid1b",
-          "nama": "VIDIO PLATINUM PRIVATE 1 BULAN ALL DEVICE",
-          "desk": "GARANSI BACKFREE(TIDAK TERMASUK LIMIT SCREEN DAN AKUN KE BANNED)",
-          "harga": 25000,
-          "stok": 0,
-          "stokTerjual": 0,
-          "totalStok": 0
-     }
+  {
+    "id": "viu2b",
+    "nama": "VIU 2 BULAN ANTILIMIT",
+    "desk": "PRIVATE ANTILIMIT",
+    "harga": 0,
+    "stok": 27,
+    "stokTerjual": 20,
+    "totalStok": 47
+  },
+  {
+    "id": "netflix1u",
+    "nama": "NETFLIX 1U",
+    "desk": "FULL GARANSI",
+    "harga": 25000,
+    "stok": 0,
+    "stokTerjual": 4,
+    "totalStok": 4,
+    "note": "⾕  syarat dan ketentuannya:\n\n➜ Hanya di perbolehkan login 1 device saja\n➜ dilarang memakai dan \n mengubah pin / rename / profile\n orang lain\n➜ dilarang ganti email atau password\n➜ dilarang otak atik akun / billing (denda 500k)\n➜ dilarang ubah plan !\n➜ dilarang login logout\n➜ dilarang menggunakan vpn \n➜ durasi 25-30 hari terhitung 1 bulan\n➜ klik ‘ not right now ’ atau ‘ tidak\n sekarang ’ jika ada notif update\n pembayaran, sehingga akun dapat\n dipakai menonton kembali\n\n⾕  ps :\n⛔ Tidak menerima komplain screen limit\n⛔ Device login terdeteksi , jika melanggar rules akun akan di tarik dan garansi hangus \n⛔ proses garansi 3x24 jam\n⛔ thank you for ordering :\n happy watching !"
+  },
+  {
+    "id": "yt1b",
+    "nama": "YOUTUBE 1 BULAN INDIVIDUAL",
+    "desk": "FULL GARANSI",
+    "harga": 4000,
+    "stok": 0,
+    "stokTerjual": 7,
+    "totalStok": 7
+  },
+  {
+    "id": "vidiotv",
+    "nama": "VIDIO TV ONLY",
+    "desk": "FULL GARANSI",
+    "harga": 10000,
+    "stok": 0,
+    "stokTerjual": 6,
+    "totalStok": 6,
+    "note": "1. email ini tidak aktif. akun bersifat private jadi boleh ganti email aktif jika lupa pw bisa di reset\n2. login menggunakan email bukan google"
+  },
+  {
+    "id": "am1th",
+    "nama": "ALIGHT MOTION 1 TAHUN",
+    "desk": "GARANSI 6 BULAN",
+    "harga": 2500,
+    "stok": 5,
+    "stokTerjual": 0,
+    "totalStok": 5,
+    "note": "- Akses Login: yopmail.com\n- Cara login: https://t.me/tutoriallogin"
+  },
+  {
+    "id": "admincanva",
+    "nama": "ADMIN CANVA LIFETIME",
+    "desk": "BISA INVITE 100 MEMBER, GARANSI 3 BULAN",
+    "harga": 10000,
+    "stok": 4,
+    "stokTerjual": 0,
+    "totalStok": 4
+  },
+  {
+    "id": "diamond",
+    "nama": "VIDIO DIAMOND 1 BULAN PRIVATE",
+    "desk": "GARANSI BACKFREE(TIDAK TERMASUK LIMIT SCREEN DAN AKUN KE BANNED)",
+    "harga": 85000,
+    "stok": 0,
+    "stokTerjual": 1,
+    "totalStok": 1,
+    "note": "1.⁠ ⁠Private ONLY! Boleh 2 device asal tidak lebih. Rawan banned! Jangan maksain lebih dari 2 device!\n2.⁠ ⁠Wajib ubah ke email aktif jika terjadi salah pw bisa di reset!\n3.⁠ ⁠Dilarang otak atik bill \n4.⁠ ⁠Garansi apabila bf, tidak untuk kebanned"
+  },
+  {
+    "id": "vid1b",
+    "nama": "VIDIO PLATINUM PRIVATE 1 BULAN ALL DEVICE",
+    "desk": "GARANSI BACKFREE(TIDAK TERMASUK LIMIT SCREEN DAN AKUN KE BANNED)",
+    "harga": 20500,
+    "stok": 0,
+    "stokTerjual": 0,
+    "totalStok": 0
+  },
+  {
+    "id": "bstation",
+    "nama": "JASPAY BSTATION 1 BULAN",
+    "desk": "PAKE AKUN MU GARANSI BACKFREE",
+    "harga": 23000,
+    "stok": 8,
+    "stokTerjual": 0,
+    "totalStok": 8
+  }
 ]

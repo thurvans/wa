@@ -661,20 +661,7 @@
 
   Powered By: *${wm2}*
   `
-  chanzx.sendMessage(from, {
-      text: anu,
-      contextInfo: {
-        externalAdReply: {
-  showAdAttribution: true, 
-  title: `${ucapanWaktu} ${pushname}`,
-  body: "HuTod",
-  thumbnail: thumb,
-  sourceUrl: "https://chat.whatsapp.com/BzkO3XIfPr3HaJYuX6LD23",
-  mediaType: 1,
-  renderLargerThumbnail: true
-        }
-      }
-    })
+  chanzx.sendMessage(from, { text: anu });
     //  chanzx.sendMessage(from, { audio: fs.readFileSync('./mp3/menu.mp3'), mimetype: 'audio/mp4', ptt: true, fileLength: 88738})
   }
   break;
@@ -1025,6 +1012,12 @@ break;
     return db_saldo[user] || 0; // Mengembalikan saldo pengguna, default 0 jika tidak ditemukan
 }
 
+
+// Fungsi untuk memformat angka dengan titik pemisah ribuan
+function formatNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
 case 'buy': {
     try {
         validateRegistration(sender);
@@ -1085,6 +1078,7 @@ case 'buy': {
 
     // Kurangi saldo pengguna
     db_saldo[userIndex].saldo -= totalHarga;
+    const saldoUser = db_saldo[userIndex].saldo; // Ambil sisa saldo pengguna setelah pengurangan
     fs.writeFileSync('./database/saldo.json', JSON.stringify(db_saldo, null, 2));
 
     // Ambil akun sesuai jumlah yang dibeli
@@ -1101,15 +1095,15 @@ case 'buy': {
     const tanggalTransaksi = `${hariini} : ${wib}`;
 
     // Informasi pembelian
-    let purchaseInfo = `┅━━━━━═┅═❏ *Transaksi Success* ❏═┅═━━━━━┅\n`;
-    purchaseInfo += `┌────────\n`;
-    purchaseInfo += `ID Order: ${idOrder}\n`;
-    purchaseInfo += `Nomer Buyer: ${sender.split('@')[0]}\n`;
-    purchaseInfo += `Produk: ${produk.nama}\n`;
-    purchaseInfo += `Jumlah: ${jumlah}\n`;
-    purchaseInfo += `Harga Total: Rp${totalHarga}\n`;
-    purchaseInfo += `Tanggal Transaksi: ${tanggalTransaksi}\n`;
-    purchaseInfo += `└────────\n\n`;
+    let purchaseInfo = `┌┅━━━━━═┅═❏ *Transaksi Success* ❏═┅═━━━━━┅\n\n`;
+    purchaseInfo += `- ID Order: ${idOrder}\n`;
+    purchaseInfo += `- Nomer Buyer: ${sender.split('@')[0]}\n`;
+    purchaseInfo += `- Produk: ${produk.nama}\n`;
+    purchaseInfo += `- Jumlah: ${jumlah}\n`;
+    purchaseInfo += `- Harga Total: Rp${formatNumber(totalHarga)}\n`; 
+    purchaseInfo += `- Sisa Saldo: Rp${formatNumber(saldoUser)}\n`; 
+    purchaseInfo += `- Tanggal Transaksi: ${tanggalTransaksi}\n`;
+    purchaseInfo += `└────────────────────────────────────────\n\n`;
     purchaseInfo += `*[ Detail Akun ]*\n`;
 
     akunTerjual.forEach((akun, index) => {
@@ -1117,9 +1111,15 @@ case 'buy': {
     });
 
     reply(purchaseInfo);
+
+    // Kirim catatan produk dengan jeda 3 detik
+    if (produk.note) {
+        setTimeout(() => {
+            reply(`*[ Catatan Produk ]*\n${produk.note}`);
+        }, 3000); // 3000ms = 3 detik
+    }
 }
 break;
-
 
 
   case 'daftar': {
