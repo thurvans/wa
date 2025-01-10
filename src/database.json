@@ -175,6 +175,14 @@
     "6283879664137@s.whatsapp.net": {
       "afkTime": -1,
       "afkReason": ""
+    },
+    "6282129962506@s.whatsapp.net": {
+      "afkTime": -1,
+      "afkReason": ""
+    },
+    "6281190077710@s.whatsapp.net": {
+      "afkTime": -1,
+      "afkReason": ""
     }
   },
   "group": {},
@@ -305,6 +313,16 @@
       "antilinkv2": false
     },
     "6283879664137@s.whatsapp.net": {
+      "mute": false,
+      "antilink": false,
+      "antilinkv2": false
+    },
+    "6282129962506@s.whatsapp.net": {
+      "mute": false,
+      "antilink": false,
+      "antilinkv2": false
+    },
+    "6281190077710@s.whatsapp.net": {
       "mute": false,
       "antilink": false,
       "antilinkv2": false

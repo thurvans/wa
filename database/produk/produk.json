@@ -28,23 +28,13 @@
     "totalStok": 7
   },
   {
-    "id": "vidiotv",
-    "nama": "VIDIO TV ONLY",
-    "desk": "FULL GARANSI",
-    "harga": 10000,
-    "stok": 0,
-    "stokTerjual": 6,
-    "totalStok": 6,
-    "note": "1. email ini tidak aktif. akun bersifat private jadi boleh ganti email aktif jika lupa pw bisa di reset\n2. login menggunakan email bukan google"
-  },
-  {
     "id": "am1th",
     "nama": "ALIGHT MOTION 1 TAHUN",
     "desk": "GARANSI 6 BULAN",
     "harga": 2500,
-    "stok": 5,
-    "stokTerjual": 0,
-    "totalStok": 5,
+    "stok": 0,
+    "stokTerjual": 1,
+    "totalStok": 6,
     "note": "- Akses Login: yopmail.com\n- Cara login: https://t.me/tutoriallogin"
   },
   {
@@ -83,5 +73,14 @@
     "stok": 8,
     "stokTerjual": 0,
     "totalStok": 8
+  },
+  {
+    "id": "vidiotv",
+    "nama": "VIDIO TV ONLY",
+    "desk": "GARANSI BACKFREE(TIDAK TERMASUK LIMIT SCREEN DAN AKUN KE BANNED)",
+    "harga": 10000,
+    "stok": 1,
+    "stokTerjual": 1,
+    "totalStok": 2
   }
 ]

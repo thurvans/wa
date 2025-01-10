@@ -792,41 +792,54 @@ break;
         break;
     }
 
-        case 'saldo': {
-            try {
-                validateRegistration(sender); // Validasi registrasi
-            } catch (err) {
-                return reply('Anda belum terdaftar!');
-            }
-        
-            // Baca ulang data saldo dari file saldo.json
-            const db_saldo = JSON.parse(fs.readFileSync('./database/saldo.json', 'utf-8'));
-        
-            // Fungsi untuk mengecek saldo
-            function cekSaldo(user, db_saldo) {
-                const userData = db_saldo.find(item => item.id === user); // Cari user berdasarkan id
-                return userData ? userData.saldo : 0; // Kembalikan saldo jika user ditemukan, jika tidak 0
-            }
-        
-            // Ambil saldo user
-            const saldoUser = cekSaldo(sender.split('@')[0], db_saldo);
-        
-            // Pesan untuk user
-            const message = `━━ *DETAIL AKUN KAMU* ━━
-            
-            • NAMA: ${pushname}
-            • Nomor: ${sender.split('@')[0]}
-            • Saldo: Rp${toRupiah(saldoUser)}
-            
-            Untuk nambah Saldo ketik #deposit
-            
-            🍀 *Note :*
-            _saldo hanya bisa untuk buy_
-            _tidak bisa ditarik atau transfer_!`;
-        
-            reply(message);
+    case 'saldo': {
+        try {
+            validateRegistration(sender); // Validasi registrasi
+        } catch (err) {
+            return reply('Anda belum terdaftar!');
         }
-        break;
+    
+        // Baca ulang data saldo dari file saldo.json
+        let db_saldo = [];
+        try {
+            db_saldo = JSON.parse(fs.readFileSync('./database/saldo.json', 'utf-8'));
+        } catch (err) {
+            console.error('Error membaca file saldo.json:', err);
+            return reply('Terjadi kesalahan saat membaca data saldo.');
+        }
+    
+        // Fungsi untuk mengecek saldo
+        function cekSaldo(user, db_saldo) {
+            const userData = db_saldo.find(item => item.id === user); // Cari user berdasarkan id
+            return userData ? userData.saldo : 0; // Kembalikan saldo jika user ditemukan, jika tidak 0
+        }
+    
+        // Ambil saldo user
+        const saldoUser = cekSaldo(sender.split('@')[0], db_saldo);
+    
+        // Pastikan pushname memiliki nilai default jika undefined
+        const userName = pushname || 'User';
+    
+        // Pastikan saldoUser adalah angka sebelum diformat
+        const saldoFormatted = typeof saldoUser === 'number' ? toRupiah(saldoUser) : '0';
+    
+        // Pesan untuk user
+        const message = `━━ *DETAIL AKUN KAMU* ━━
+        
+        • NAMA: ${userName}
+        • Nomor: ${sender.split('@')[0]}
+        • Saldo: Rp${saldoFormatted}
+        
+        Untuk nambah Saldo ketik #deposit
+        
+        🍀 *Note :*
+        _saldo hanya bisa untuk buy_
+        _tidak bisa ditarik atau transfer_!`;
+    
+        reply(message);
+    }
+    break;
+    
         
 
 case 'setdesk':{
@@ -1020,19 +1033,26 @@ function formatNumber(number) {
 
 case 'buy': {
     try {
-        validateRegistration(sender);
+        validateRegistration(sender); // Validasi registrasi pengguna
     } catch (err) {
         return reply('Anda belum terdaftar!');
     }
 
-    if (!text) return reply('Format Salah. Gunakan format: #buy IDPRODUK|JUMLAH');
-    const data = text.split('|');
-    if (data.length < 2) {
-        return reply('Format Salah. Gunakan format: #buy IDPRODUK|JUMLAH');
+    if (!text) {
+        return reply('Format salah. Gunakan format: #buy IDPRODUK|JUMLAH');
     }
 
-    const id = data[0];
-    const jumlah = parseInt(data[1], 10);
+    const data = text.split('|');
+    if (data.length !== 2 || !data[0] || isNaN(data[1])) {
+        return reply('Format salah. Gunakan format: #buy IDPRODUK|JUMLAH');
+    }
+
+    const id = data[0].trim();
+    const jumlah = parseInt(data[1].trim(), 10);
+
+    if (jumlah <= 0) {
+        return reply('Jumlah harus lebih dari 0.');
+    }
 
     // Load data produk
     let produkList = [];
@@ -1040,13 +1060,17 @@ case 'buy': {
         const existingData = fs.readFileSync('database/produk/produk.json', 'utf8');
         produkList = JSON.parse(existingData);
     } catch (err) {
-        console.error(err);
+        console.error('Error membaca file produk:', err);
         return reply('Terjadi kesalahan saat membaca data produk.');
     }
 
     const produk = produkList.find(p => p.id === id);
-    if (!produk) return reply('Produk tidak ditemukan.');
-    if (produk.stok < jumlah) return reply('Stok tidak mencukupi.');
+    if (!produk) {
+        return reply('Produk tidak ditemukan.');
+    }
+    if (produk.stok < jumlah) {
+        return reply('Stok tidak mencukupi.');
+    }
 
     // Load data stok akun
     const stokPath = `./database/script/${id}.json`;
@@ -1059,18 +1083,22 @@ case 'buy': {
             return reply('Stok akun tidak ditemukan.');
         }
     } catch (err) {
-        console.error(err);
+        console.error('Error membaca file stok akun:', err);
         return reply('Terjadi kesalahan saat membaca data stok akun.');
     }
 
-    if (stokData.length < jumlah) return reply('Stok akun tidak mencukupi.');
+    if (stokData.length < jumlah) {
+        return reply('Stok akun tidak mencukupi.');
+    }
 
     // Hitung total harga
     const totalHarga = produk.harga * jumlah;
 
     // Cek saldo pengguna
     const userIndex = db_saldo.findIndex(item => item.id === sender.split('@')[0]);
-    if (userIndex === -1) return reply('Data saldo Anda tidak ditemukan.');
+    if (userIndex === -1) {
+        return reply('Data saldo Anda tidak ditemukan.');
+    }
 
     if (db_saldo[userIndex].saldo < totalHarga) {
         return reply('Saldo Anda tidak mencukupi untuk melakukan pembelian ini.');
@@ -1078,17 +1106,32 @@ case 'buy': {
 
     // Kurangi saldo pengguna
     db_saldo[userIndex].saldo -= totalHarga;
-    const saldoUser = db_saldo[userIndex].saldo; // Ambil sisa saldo pengguna setelah pengurangan
-    fs.writeFileSync('./database/saldo.json', JSON.stringify(db_saldo, null, 2));
+    const saldoUser = db_saldo[userIndex].saldo; // Sisa saldo pengguna
+    try {
+        fs.writeFileSync('./database/saldo.json', JSON.stringify(db_saldo, null, 2));
+    } catch (err) {
+        console.error('Error menyimpan data saldo:', err);
+        return reply('Terjadi kesalahan saat memperbarui saldo.');
+    }
 
     // Ambil akun sesuai jumlah yang dibeli
     const akunTerjual = stokData.splice(0, jumlah);
-    fs.writeFileSync(stokPath, JSON.stringify(stokData, null, 2));
+    try {
+        fs.writeFileSync(stokPath, JSON.stringify(stokData, null, 2));
+    } catch (err) {
+        console.error('Error menyimpan data stok akun:', err);
+        return reply('Terjadi kesalahan saat memperbarui stok akun.');
+    }
 
     // Perbarui stok produk
     produk.stok -= jumlah;
     produk.stokTerjual = (produk.stokTerjual || 0) + jumlah;
-    fs.writeFileSync('database/produk/produk.json', JSON.stringify(produkList, null, 2));
+    try {
+        fs.writeFileSync('database/produk/produk.json', JSON.stringify(produkList, null, 2));
+    } catch (err) {
+        console.error('Error menyimpan data produk:', err);
+        return reply('Terjadi kesalahan saat memperbarui data produk.');
+    }
 
     // Buat ID Order
     const idOrder = `FCS-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -1100,14 +1143,16 @@ case 'buy': {
     purchaseInfo += `- Nomer Buyer: ${sender.split('@')[0]}\n`;
     purchaseInfo += `- Produk: ${produk.nama}\n`;
     purchaseInfo += `- Jumlah: ${jumlah}\n`;
-    purchaseInfo += `- Harga Total: Rp${formatNumber(totalHarga)}\n`; 
-    purchaseInfo += `- Sisa Saldo: Rp${formatNumber(saldoUser)}\n`; 
+    purchaseInfo += `- Harga Total: Rp${formatNumber(totalHarga)}\n`;
+    purchaseInfo += `- Sisa Saldo: Rp${formatNumber(saldoUser)}\n`;
     purchaseInfo += `- Tanggal Transaksi: ${tanggalTransaksi}\n`;
     purchaseInfo += `└────────────────────────────────────────\n\n`;
     purchaseInfo += `*[ Detail Akun ]*\n`;
 
     akunTerjual.forEach((akun, index) => {
-        purchaseInfo += `${index + 1}. Email: ${akun.email}| Password: ${akun.password}\n`;
+        const email = akun.email || 'Tidak Diketahui';
+        const password = akun.password || 'Tidak Diketahui';
+        purchaseInfo += `${index + 1}. Email: ${email} | Password: ${password}\n`;
     });
 
     reply(purchaseInfo);
@@ -1120,6 +1165,9 @@ case 'buy': {
     }
 }
 break;
+
+
+
 
 
   case 'daftar': {
@@ -1182,8 +1230,8 @@ break;
         return reply('Terjadi kesalahan saat membaca produk.');
     }
 
-    let response = `《 *STOK PRODUK FACA STORE* 》
-  ┌───────────────···*
+    let response = 
+`  ┌──────*BOT FACA STORE*───────
   │ ⊷ Untuk menggunakan bot ketik perintah :
   │ ⊷ #stok (List Aplikasi Premium)
   │ ⊷ #deposit (Deposit)
@@ -1192,7 +1240,7 @@ break;
   │ Contoh : #buy yt3b|1
   │
   │ Nomer Owner : ${ownernomer}
-  └───────────────···*`;  
+  └───────────────···`;  
     produkList.forEach((produk) => {
         response += `\n\n✦ *${produk.nama}* ✦\n➛ Harga: ${produk.harga}\n➛ Stok Tersedia: ${produk.stok}\n➛ Stok Terjual: ${produk.stokTerjual}\n➛ Deskripsi: ${produk.desk}\n➛ Kode: ${produk.id}\n\n➛ Ketik: ${prefix}buy ${produk.id}|1`; 
     });
